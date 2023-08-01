@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -8,11 +9,12 @@ void attack();
 void parseStr(char phrase[]);
 int getWord(char word[], char phrase[]);
 void look(char str[]);
+void take(char str[]);
 void help();
 void addItem(char str[]);
 int indexOf(char str[], char c);
 int len(char str[]);
-void setHint(char str[]);
+void printDesc(int lvl);
 
 struct Person {
     int lvl;
@@ -20,20 +22,21 @@ struct Person {
 };
 
 struct Item {
+    int id;
     char name[30];
 };
 
+//globals
 struct Person mc;
 struct Item items[30];
+struct Item stageItems[30];
 struct Person people[30];
 char desc[100];
 char hint[100];
 
-//strings
-char lvl1intro[] = "An impressive but somewhat childish voice booms through some kind of amplification: \"Welcome, welcome, welcome!\"";
-
 int main() {
     char name[30];
+    printZone("May's Trial - Laurence Welch");
     printf("What is your first name?: ");
     fgets(name, sizeof(name), stdin);
     mc.lvl = 1;
@@ -52,7 +55,16 @@ void parseStr(char phrase[]) {
 }
 
 void look(char string[]) {
-    printf("You look around...\n");
+    int count = 0;
+    printf("looking around, you see a:\n");
+    while (items[count].id != -1) {
+        printf("%s\n", items[count].name);
+        count++;
+    } 
+}
+
+void take(char str[]) {
+    
 }
 
 void help() {
@@ -79,9 +91,13 @@ void attack() {
 }
 
 void lvl1() {
-    setHint("Try typing 'look' (without the quotes) and press enter!");
+    //strcpy(hint, "Try typing 'look' (without the quotes) and press enter!");
     printZone("A Dark Arena");
-    printf("%s", lvl1intro);
+    printDesc(1);
+    printf("tip: type 'help' (without the quotes) and press enter\n");
+    items[0].id = 1;
+    strcpy(items[0].name, "key");
+    items[1].id = -1;
     while(1) {
         char str[30];
         printf(">>");
@@ -107,19 +123,11 @@ int len(char str[]) {
     return strcspn(str, "\0"); 
 }
 
-void setHint(char str[]) {
-    int count = 0;
-    while (str[count] != '\0') {
-        hint[count] = str[count];
-        count++;
-    }
-}
-
 void printZone(char str[]) {
     int length = len(str);
-    int count;
-    char first[30];
-    char last[30];
+    int count = 0;
+    char first[100];
+    char last[100];
     first[count] = '*';
     for (count = 1; count < length + 3; count++) {
         first[count] = '-'; 
@@ -129,7 +137,6 @@ void printZone(char str[]) {
     first[count + 2] = '|';
     first[count + 3] = ' ';
     first[count + 4] = '\0';
-    //last
     last[0] = ' ';
     last[1] = '|';
     last[2] = '\n';
@@ -142,4 +149,10 @@ void printZone(char str[]) {
     printf("%s", first);
     printf("%s", str);
     printf("%s\n", last);
+}
+
+void printDesc(int lvl) {
+    if (lvl == 1) {
+        printf("This isn't a dream...?\nA strange sense of reality fades in as you awaken. You're in a cathedral of epic proportions. As you gaze about, a brash voice breaks the silence:\n\"Welcome, welcome!!!\"\n\"Today is... NOT AGAIN!!!\"\nThe voice breaks off for a second then returns.\n\"Just a second! Don't move...\"\nThe voice cuts off again and a stark silence sits in the air.\n");
+    }
 }
