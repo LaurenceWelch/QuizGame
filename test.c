@@ -6,6 +6,7 @@
 //constants
 const int MAXOPTIONS = 10;
 const int MAXOPTIONLENGTH = 30;
+const int MAXQUESTIONS = 100;
 
 //structs
 struct Question {
@@ -29,29 +30,77 @@ int splitIntoOptions(char str[]);
 void substr(char str[], int start, int end);
 void setRandomArray(int out[4], int numOptions);
 void setRightAnswer(int when);
+void freeQuestions();
 
 //globals
 struct Option options[MAXOPTIONS];
 char rightAnswer;
+struct Question* questions;
+int score = 0;
+int maxScore = 0;
 
 int main() {
     char input;
     srand(time(NULL));
-    struct Question q;
-    strcpy(q.question, "Which command lists files in the current directory?");
-    strcpy(q.options, "ls;cat;tree;grep;mkdir;touch;");
-    //initialize array
-    for (int c = 0; c < MAXOPTIONS; c++) options[c].isEmpty = 1;
-    //start the quiz
-    printMessage(q.question, '-');
-    if (printOptions(q.options) == -1) printf("error");
-    while (1) {
-        printf(">>");
-        input = getUserInput();
-        if (verifyInput(input)) break;
+    FILE* fp;
+    fp = fopen("questions.txt", "r");
+    if (fp == NULL) {
+        printf("couldn't find \'questions.txt\' in directory, closing\n");
+        return 0;
     }
-    if (input == rightAnswer) printMessage("Good Job!", '-');
+
+    //get data from text
+    questions = malloc(MAXQUESTIONS * sizeof(struct Question));
+    int c = 0;    
+    int index = 0;
+    char s[100];
+    while (fgets(s, 100, fp) && c < MAXQUESTIONS) {
+        s[strcspn(s, "\n")] = '\0';
+        if (c % 2 == 0) {
+            strcpy(questions[index].question, s);
+        }
+        else {
+            strcpy(questions[index].options, s);
+            index++;
+        }
+        c++;
+    }
+    fclose(fp);
+    maxScore = index * 10;
+
+    //main loop
+    for (int c = 0; c < index; c++) {
+        //setup options array
+        for (int c = 0; c < MAXOPTIONS; c++) {
+            options[c].isEmpty = 1;
+        }
+        printMessage(questions[c].question, '-');
+        printf("(\'q\' to quit)\n");
+        printOptions(questions[c].options);
+        while (1) {
+            printf(">>");
+            input = getUserInput();
+            if (input == 'q') {
+                freeQuestions();
+                return 0;
+            }
+            if (verifyInput(input) == 1) break;
+        }
+        if (input == rightAnswer) {
+            printMessage("Good Job!", '-');
+            score += 10;
+        }
+    }
+    
+    //free questions array
+    printf("You score %i points out of %i!\n", score, maxScore);
+    freeQuestions();
     return 0;
+}
+
+void freeQuestions() {
+    printf("calling free\n");
+    free(questions);
 }
 
 char getUserInput() {
