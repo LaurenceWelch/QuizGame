@@ -24,11 +24,15 @@ int verifyInput(char ch);
 void printMessage(char str[], char border);
 int printOptions(char str[]);
 int len(char str[]);
+int lenOptions();
 int splitIntoOptions(char str[]);
 void substr(char str[], int start, int end);
+void setRandomArray(int out[4], int numOptions);
+void setRightAnswer(int when);
 
 //globals
 struct Option options[MAXOPTIONS];
+char rightAnswer;
 
 int main() {
     char input;
@@ -36,17 +40,17 @@ int main() {
     struct Question q;
     strcpy(q.question, "Which command lists files in the current directory?");
     strcpy(q.options, "ls;cat;tree;grep;mkdir;touch;");
-
-    int c = 0;
-    for (c = 0; c < MAXOPTIONS; c++) options[c].isEmpty = 1;
-    if (printOptions(q.options) != -1) printf("done");
-    return 0;
-    printMessage(q.question, '?');
+    //initialize array
+    for (int c = 0; c < MAXOPTIONS; c++) options[c].isEmpty = 1;
+    //start the quiz
+    printMessage(q.question, '-');
+    if (printOptions(q.options) == -1) printf("error");
     while (1) {
         printf(">>");
         input = getUserInput();
-        verifyInput(input);
+        if (verifyInput(input)) break;
     }
+    if (input == rightAnswer) printMessage("Good Job!", '-');
     return 0;
 }
 
@@ -61,7 +65,7 @@ int verifyInput(char ch) {
     if (ch == 'a' || ch == 'b' || ch == 'c' || ch == 'd') {
         return 1;
     }
-    printMessage("enter a, b, c, or d", '!');
+    printMessage("enter a, b, c, or d", '-');
     return -1;
 }
 
@@ -93,11 +97,15 @@ int len(char str[]) {
 
 int printOptions(char str[]) {
     if (!splitIntoOptions(str)) return -1;
-    int c = 0;
-    while (options[c].isEmpty != 1 && c < MAXOPTIONS) {
-        printf("%s\n", options[c].str);
-        c++;
-    }
+    int out[4];
+    //subtract 1 as 1 option is the answer
+    int length = lenOptions() - 1;
+    setRandomArray(out, length);
+    char abcd[] = {'a', 'b', 'c', 'd'};
+    int c;
+    for (c = 0; c < 4; c++) {
+        printf("%c: %s\n", abcd[c], options[out[c]].str);
+    }   
     return 1;
 }
 
@@ -121,7 +129,44 @@ int splitIntoOptions(char str[]) {
         }
         c++;
     }
+    if (count < 4) {
+        printf("must have atleast 4 options!");
+        return -1;
+    }
     return 1;
 }
 
+int lenOptions() {
+    int c = 0;
+    while (options[c].isEmpty != 1) c++;
+    return c;
+}
 
+//index array representing a, b, c, and d
+void setRandomArray(int outArr[4], int wrongLen) {
+    int wrong[wrongLen];
+    for (int c; c < wrongLen; c++) wrong[c] = c + 1;
+    int when = rand() % 4;
+    setRightAnswer(when);
+    //pick 4, make sure right answer is included 
+    for (int c = 0; c < 4; c++) {
+        if (c == when) outArr[c] = 0;
+        else {
+            int rng = rand() % wrongLen;
+            outArr[c] = wrong[rng];
+            if (rng != wrongLen - 1) {
+                int temp = wrong[rng];
+                wrong[rng] = wrong[wrongLen - 1];
+                wrong[wrongLen -1] = temp;
+            }
+            wrongLen--;
+        }
+    }
+}
+
+void setRightAnswer(int when) {
+    if (when == 0) rightAnswer = 'a';
+    else if (when == 1) rightAnswer = 'b';
+    else if (when == 2) rightAnswer = 'c';
+    else rightAnswer = 'd'; 
+} 
