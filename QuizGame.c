@@ -4,9 +4,9 @@
 #include <time.h>
 
 //constants
-const int MAXOPTIONS = 10;
-const int MAXOPTIONLENGTH = 30;
-const int MAXQUESTIONS = 100;
+#define MAXOPTIONS 10
+#define MAXOPTIONLENGTH 30
+#define MAXQUESTIONS 100
 
 //structs
 struct Question {
