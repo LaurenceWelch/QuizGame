@@ -1,0 +1,20 @@
+Show the contents of a directory
+ls;cat;tree;grep;whoami;mkdir;
+Create a file
+touch;mkdir;file;top;ls;tree;
+Create a directory
+mkdir;file;touch;ls;grep;find;
+Search within a file
+grep;find;findstr;awk;uniq;top;
+Search for a file
+find;grep;locate;touch;mkdir;top;
+ls flag to include hidden contents?
+a;h;l;R;r;i;
+Display only certain columns
+awk;col;find;findstr;uniq;sort;
+SSH flag to specify a port?
+p;P;i;a;b;c;
+scp flag to specify a port?
+P;p;a;b;c;d;
+Change permissions on a file?
+chmod;usermod;useradd;file;top;stat;
