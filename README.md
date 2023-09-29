@@ -1,1 +1,1 @@
-Eventually I wanna have some system where questions can easily be uploaded into the questions.txt file
+skeleton structure for a quiz game
